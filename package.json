@@ -1,0 +1,23 @@
+{
+  "dependencies": {
+    "discord.js": "^13.1.0",
+    "mongodb": "^4.1.3",
+    "nodemon": "^2.0.15"
+  },
+  "name": "issei",
+  "version": "1.0.0",
+  "main": "index.js",
+  "devDependencies": {},
+  "scripts": {
+    "start": "nodemon --ext \"ts, js, json\" \"tsc && node index.js\" "
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "prettier": {
+    "trailingComma": "es5",
+    "tabWidth": 2,
+    "semi": true,
+    "singleQuote": true
+  }
+}
