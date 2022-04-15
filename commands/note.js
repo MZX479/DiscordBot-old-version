@@ -10,6 +10,7 @@ module.exports = {
           this.message = message;
           this.args = args;
           this.db = db;
+          this.cooldown = 10000;
 
           this.main();
         }
@@ -34,7 +35,11 @@ module.exports = {
             time: new Date(),
           };
 
-          this.overwrite_member_data(this.message.member.id, user_note);
+          this.overwrite_member_data(
+            this.message.member.id,
+            user_note,
+            this.cooldown
+          );
 
           this.response(`Success!`, '00ff00', 'Note was successfully added!');
         }
@@ -56,9 +61,9 @@ module.exports = {
           this.message.channel.send({ embeds: [response_embed] });
         }
 
-        async overwrite_member_data(member_id, label) {
-          if (!member_id || !label)
-            throw new Error(`Id or Label weren't given`);
+        async overwrite_member_data(member_id, label, cooldown) {
+          if (!member_id || !label || !cooldown)
+            throw new Error(`One of arguments weren't given!`);
 
           let users_db = this.db.collection('notes');
           let current_user =
@@ -72,6 +77,7 @@ module.exports = {
             users_db.insertOne({
               login: member_id,
               labels: label,
+              cooldown: cooldown,
             });
           } else {
             users_db.updateOne(
@@ -81,6 +87,7 @@ module.exports = {
               {
                 $set: {
                   labels: label,
+                  cooldown: cooldown,
                 },
               }
             );

@@ -1,0 +1,6 @@
+{
+    "compilerOptions": {
+        "outDir": "C:/Issei/commands",
+        "rootDir": "C:/Issei/TS_COMMANDS",
+    }
+}

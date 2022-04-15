@@ -1,11 +1,11 @@
-import * as Discord from "discord.js";
-//import * as DB from "mongodb";
+import * as Discord from 'discord.js';
+import * as DB from 'mongodb';
 
 module.exports = {
-  aliases: "EXAMPLE",
-  description: "",
+  aliases: 'EXAMPLE',
+  description: '',
   async execute(bot, f, mongo, args, message) {
-    //const db: DB.Db = mongo.db(message.guild.id);
+    const db: DB.Db = mongo.db(message.guild.id);
     try {
     } catch (e) {
       bot.users.cache
