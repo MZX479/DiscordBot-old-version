@@ -38,88 +38,80 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 exports.__esModule = true;
 var Discord = require("discord.js");
 module.exports = {
-    aliases: 'note',
+    aliases: 'daily',
     description: '',
     execute: function (bot, f, mongo, args, message) {
         return __awaiter(this, void 0, void 0, function () {
-            var db, Note;
+            var db, Daily;
             return __generator(this, function (_a) {
                 db = mongo.db(message.guild.id);
                 try {
-                    Note = /** @class */ (function () {
-                        function Note(message, args) {
+                    Daily = /** @class */ (function () {
+                        function Daily(message, args) {
                             this.message = message;
                             this.args = args;
                             this.db = db;
-                            this.cooldown = 1800000;
+                            this.cooldown = 86000000;
+                            this.daily_amount = 1000;
                             this.main();
                         }
-                        Note.prototype.main = function () {
+                        Daily.prototype.main = function () {
                             return __awaiter(this, void 0, void 0, function () {
-                                var _get_user_data, user_label, label_id, user_note, noteCooldown;
+                                var _get_member_data, current_time, daily_cooldown;
                                 return __generator(this, function (_a) {
                                     switch (_a.label) {
                                         case 0: return [4 /*yield*/, this._get_member_data(this.message.member.id)];
                                         case 1:
-                                            _get_user_data = _a.sent();
-                                            user_label = this.args.join(' ');
-                                            if (!user_label || user_label.length > 100)
-                                                return [2 /*return*/, this.response('Error', '#ff0000', "Note wasn't given or too much to overwrite")];
-                                            label_id = Math.random().toString(36).slice(2);
-                                            user_note = {
-                                                label: user_label,
-                                                id: label_id,
-                                                time: new Date()
-                                            };
-                                            noteCooldown = new Date().getTime() + this.cooldown;
-                                            if (_get_user_data.note_cooldown > new Date().getTime()) {
-                                                return [2 /*return*/, this.response('Error', '#ff0000', 'Your cooldown has not elapsed')];
-                                            }
-                                            else {
-                                                this._overwrite_member_data(this.message.member.id, user_note, noteCooldown);
-                                                this.response('Success', '#00ff00', 'Note was successfullly added!');
-                                            }
-                                            return [2 /*return*/];
+                                            _get_member_data = _a.sent();
+                                            current_time = new Date().getTime();
+                                            daily_cooldown = current_time + this.cooldown;
+                                            if (!(_get_member_data.daily_cooldown > current_time)) return [3 /*break*/, 2];
+                                            return [2 /*return*/, this.response('Error', '#ff0000', 'Your cooldown has not elapsed')];
+                                        case 2: return [4 /*yield*/, this._overwrite_member_data(this.message.member.id, this.daily_amount, daily_cooldown)];
+                                        case 3:
+                                            _a.sent();
+                                            this.response('Success', '#00fff00', "Success. Your ballance now is `".concat(_get_member_data.coins + this.daily_amount, "` \n Comeback tommorow!"));
+                                            _a.label = 4;
+                                        case 4: return [2 /*return*/];
                                     }
                                 });
                             });
                         };
-                        Note.prototype.response = function (title, color, description) {
+                        Daily.prototype.response = function (title, color, text) {
                             return __awaiter(this, void 0, void 0, function () {
-                                var response_embed;
+                                var response;
                                 return __generator(this, function (_a) {
-                                    if (!title || !color || !description)
-                                        throw new Error("One of components wasn't given!");
-                                    response_embed = new Discord.MessageEmbed()
+                                    if (!title || !color || !text)
+                                        throw new Error('One of arguments were not given!');
+                                    response = new Discord.MessageEmbed()
                                         .setColor(color)
                                         .setTitle(title)
                                         .setAuthor(this.message.author.tag, this.message.author.avatarURL({ dynamic: true }))
-                                        .setDescription(description)
+                                        .setDescription("**".concat(text, "**"))
                                         .setTimestamp();
-                                    this.message.channel.send({ embeds: [response_embed] });
+                                    this.message.channel.send({ embeds: [response] });
                                     return [2 /*return*/];
                                 });
                             });
                         };
-                        Note.prototype._overwrite_member_data = function (member_id, label, cooldown) {
+                        Daily.prototype._overwrite_member_data = function (member_id, daily_amount, cooldown) {
                             return __awaiter(this, void 0, void 0, function () {
-                                var users_db, current_user, user_labels;
+                                var users_db, current_user, new_ballance;
                                 return __generator(this, function (_a) {
                                     switch (_a.label) {
                                         case 0:
-                                            if (!member_id || !label || !cooldown)
-                                                throw new Error("One of arguments weren't given");
-                                            users_db = this.db.collection('notes');
+                                            if (!member_id || !daily_amount || !cooldown)
+                                                throw new Error('One of arguments were not given!');
+                                            users_db = this.db.collection('users');
                                             return [4 /*yield*/, users_db.findOne({ login: member_id })];
                                         case 1:
                                             current_user = (_a.sent()) || {};
-                                            user_labels = current_user.labels || [];
-                                            user_labels.push(label);
+                                            new_ballance = (current_user.coins || 0) + daily_amount;
                                             if (!current_user) {
                                                 users_db.insertOne({
                                                     login: member_id,
-                                                    labels: user_labels,
-                                                    note_cooldown: cooldown
+                                                    coins: new_ballance,
+                                                    daily_cooldown: cooldown
                                                 });
                                             }
                                             else {
@@ -127,8 +119,8 @@ module.exports = {
                                                     login: member_id
                                                 }, {
                                                     $set: {
-                                                        labels: user_labels,
-                                                        note_cooldown: cooldown
+                                                        coins: new_ballance,
+                                                        daily_cooldown: cooldown
                                                     }
                                                 });
                                             }
@@ -137,15 +129,15 @@ module.exports = {
                                 });
                             });
                         };
-                        Note.prototype._get_member_data = function (member_id) {
+                        Daily.prototype._get_member_data = function (member_id) {
                             return __awaiter(this, void 0, void 0, function () {
                                 var users_db, current_user;
                                 return __generator(this, function (_a) {
                                     switch (_a.label) {
                                         case 0:
                                             if (!member_id)
-                                                throw new Error("Didn't get a member id!");
-                                            users_db = this.db.collection('notes');
+                                                throw new Error('Member id was not provided');
+                                            users_db = this.db.collection('users');
                                             return [4 /*yield*/, users_db.findOne({ login: member_id })];
                                         case 1:
                                             current_user = (_a.sent()) || {};
@@ -154,9 +146,9 @@ module.exports = {
                                 });
                             });
                         };
-                        return Note;
+                        return Daily;
                     }());
-                    new Note(message, args);
+                    new Daily(message, args);
                 }
                 catch (e) {
                     bot.users.cache

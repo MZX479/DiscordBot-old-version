@@ -17,7 +17,7 @@ module.exports = {
           this.message = message;
           this.args = args;
           this.db = db;
-          this.cooldown = 86000000;
+          this.cooldown = 1800000;
 
           this.main();
         }
@@ -50,7 +50,7 @@ module.exports = {
             time: new Date(),
           };
 
-          let noteCooldown = new Date().getTime() + this.cooldown;
+          let noteCooldown: number = new Date().getTime() + this.cooldown;
 
           if (_get_user_data.note_cooldown > new Date().getTime()) {
             return this.response(
