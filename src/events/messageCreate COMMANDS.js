@@ -1,13 +1,13 @@
-module.exports = async function (bot, f, mongo, message) {
-  if (message.author.bot || message.channel.type != "GUILD_TEXT") return;
+export default async function (bot, f, mongo, message) {
+  if (message.author.bot || message.channel.type != 'GUILD_TEXT') return;
   if (!message.content.startsWith(f.config.prefix)) return;
 
-  let args = message.content.split(" ");
-  let command_name = args[0].replace(f.config.prefix, "");
+  let args = message.content.split(' ');
+  let command_name = args[0].replace(f.config.prefix, '');
   args.splice(0, 1);
-
+  console.log(f.commands);
   let command = f.commands.filter((command) =>
-    command.aliases.split(" ").includes(command_name)
+    command.slash.name.split(' ').includes(command_name)
   );
 
   let command_func = command.first();
@@ -21,4 +21,4 @@ module.exports = async function (bot, f, mongo, message) {
   };
 
   command_func.execute(bot, f, mongo, args, message);
-};
+}

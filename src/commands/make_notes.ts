@@ -1,9 +1,12 @@
 import * as Discord from 'discord.js';
 import * as DB from 'mongodb';
+import { type Command } from '../types';
 
-module.exports = {
-  aliases: 'note',
-  description: '',
+const command: Command = {
+  slash: {
+    name: 'note',
+    description: 'Сделать заметку',
+  },
   async execute(bot, f, mongo, args, message) {
     const db: DB.Db = mongo.db(message.guild.id);
     try {
@@ -154,3 +157,5 @@ module.exports = {
     }
   },
 };
+
+export { command };

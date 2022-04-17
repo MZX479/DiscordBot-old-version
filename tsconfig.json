@@ -1,6 +1,8 @@
 {
     "compilerOptions": {
-        "outDir": "C:/Issei/commands",
-        "rootDir": "C:/Issei/TS_COMMANDS",
+        "outDir": "C:/Issei/dist",
+        "rootDir": "C:/Issei/src",
+        "strictNullChecks": true,
+
     }
 }

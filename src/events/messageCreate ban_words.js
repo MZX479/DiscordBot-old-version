@@ -1,5 +1,5 @@
-module.exports = async function (bot, f, mongo, message) {
-  const Discord = require("discord.js");
+export default async function (bot, f, mongo, message) {
+  const Discord = require('discord.js');
   message.__proto__.reply = function (text) {
     return this.channel.send(`${this.author}, ` + text);
   };
@@ -37,4 +37,4 @@ module.exports = async function (bot, f, mongo, message) {
   await timeout(5000);
 
   response.delete();
-};
+}
