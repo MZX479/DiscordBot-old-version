@@ -2,6 +2,12 @@ import * as Discord from 'discord.js';
 import * as DB from 'mongodb';
 import { type Command } from '../types';
 
+type UserNoteType = {
+  login: string;
+  notes: Array<object>;
+  cooldown: number;
+};
+
 const command: Command = {
   slash: {
     name: 'note',
@@ -154,14 +160,11 @@ const command: Command = {
 
           let _users_db: DB.Document = this.db.collection('notes');
 
-          let _current_user =
-            (await _users_db.findOne({
+          let _current_user = <UserNoteType>await _users_db.findOne({
               login: member_id,
-            })) || {};
+            }) || {};
 
           let user_notes = _current_user.notes || [];
-
-          console.log(note);
 
           user_notes.push(note);
 
@@ -191,10 +194,9 @@ const command: Command = {
 
           let _users_db: DB.Document = this.db.collection('notes');
 
-          let _current_user =
-            (await _users_db.findOne({
+          let _current_user = <UserNoteType>await _users_db.findOne({
               login: member_id,
-            })) || {};
+            }) || {};
 
           return _current_user;
         }
