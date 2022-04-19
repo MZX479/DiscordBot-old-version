@@ -17,6 +17,11 @@ export type modulesType = {
 
 export type argsType = Readonly<CommandInteractionOption[]>;
 
+export type UserType = {
+  login: string;
+  coins: number;
+};
+
 export type slashType = {
   name: string;
   description: string;

@@ -8,13 +8,13 @@ const command: Command = {
     description: '',
   },
   async execute(bot, f, mongo, args, interaction) {
-    const db: DB.Db = mongo.db(interaction.guild.id);
+    const db: DB.Db = mongo.db(interaction.guild!.id);
     try {
   
     } catch (e) {
       bot.users.cache
         .get(f.config.owner)
-        .send(`**ERROR** \`${e.name}\`\n\`${e.message}\``);
+        ?.send(`**ERROR** \`${e.name}\`\n\`${e.message}\``);
       console.error(e);
     }
   },

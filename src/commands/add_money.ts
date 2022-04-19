@@ -109,7 +109,6 @@ const command: Command = {
           })) || {});
 
           const new_balance = (user_data.coins || 0) + amount;
-          console.log(user_data);
 
           if (!user_data.login) {
             users_db.insertOne({
