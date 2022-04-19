@@ -1,92 +1,69 @@
 import * as Discord from 'discord.js';
 import * as DB from 'mongodb';
 import { type Command } from '../types';
-import { type UserType } from '../types';
 
 const command: Command = {
   slash: {
-    name: 'addmoney',
-    description: 'adding money to user or member',
+    name: 'note',
+    description: 'making notes to db',
     options: [
       {
-        name: 'amount',
-        description: 'amount of money',
-        type: 4,
-        required: true,
-      },
-      {
-        name: 'ping',
-        description: 'ping a user',
-        type: 6,
-        required: false,
-      },
-      {
-        name: 'id',
-        description: 'using user_id',
+        name: 'note',
+        description: 'Current User note',
         type: 3,
-        required: false,
+        required: true,
       },
     ],
   },
+
   async execute(bot, f, mongo, args, interaction) {
     const db: DB.Db = mongo.db(interaction.guild!.id);
     try {
-      class AddMoney {
+      class Note {
         private interaction: Discord.CommandInteraction;
         private db: DB.Db;
-        private member_id: Discord.GuildMember;
+        private cooldown: number;
+        private TimeNow: Date;
         constructor(interaction: Discord.CommandInteraction) {
           this.interaction = interaction;
           this.db = db;
-          this.member_id;
+          this.cooldown = 60000;
+          this.TimeNow = new Date();
 
           this.main();
         }
 
         async main(): Promise<void> {
-          let member = <Discord.GuildMember>(
-            args.filter((arg) => arg.name === 'ping')[0]?.member
+          let _get_member_data = await this._get_member_data(
+            this.interaction.user.id
           );
 
-          let roles_check = <Discord.GuildMemberRoleManager>(
-            this.interaction.member?.roles
-          );
+          let note = <string>args.filter((arg) => arg.name === 'note')[0].value;
 
-          if (!roles_check.cache.has('904339446168694806'))
+          let random_id = Math.floor(Math.random() * 5540);
+
+          interface Note {
+            note: string;
+            time: Date;
+            id: number;
+          }
+
+          let new_note: Note = {
+            note: note,
+            time: this.TimeNow,
+            id: random_id,
+          };
+
+          let new_cooldown = this.TimeNow.getTime() + this.cooldown;
+
+          if (_get_member_data.cooldown! > this.TimeNow.getTime())
             return this.response(
               'Error',
               '#ff0000',
-              'You do not have a permission for that!'
+              'Your cooldown has not expired!'
             );
 
-          let member_id = <string>(
-            args.filter((arg) => arg.name === 'id')[0]?.value
-          );
-
-          if (!member && member_id) {
-            member = await interaction.guild!.members.fetch(member_id);
-            member_id = member.id;
-          }
-
-          member = this.member_id;
-
-          let amount = Number(
-            args.filter((arg) => arg.name === 'amount')[0].value
-          );
-
-          if (!amount || isNaN(amount) || amount <= 0 || amount > 300000)
-            return this.response(
-              'Error',
-              '#ff0000',
-              'Uncorrect amount (limit 300000)'
-            );
-
-          if (!member && member_id) {
-            member = await interaction.guild!.members.fetch(member_id);
-            member_id = member.id;
-          }
-
-          this.check_buttons(member, amount);
+          this.check_buttons(this.interaction.user.id, new_note, new_cooldown);
         }
 
         async response(
@@ -94,9 +71,6 @@ const command: Command = {
           color: Discord.ColorResolvable,
           description: string
         ): Promise<void> {
-          if (!title || !color || !description)
-            throw new Error('One of components was not provided!');
-
           interaction.followUp({
             embeds: [
               {
@@ -107,14 +81,16 @@ const command: Command = {
                 },
                 color,
                 description,
+                timestamp: this.TimeNow,
               },
             ],
           });
         }
 
         private async check_buttons(
-          member: Discord.GuildMember,
-          amount: number
+          member: string,
+          note: {},
+          cooldown: number
         ): Promise<void> {
           const buttons: Discord.MessageButton[] = [
             new Discord.MessageButton()
@@ -130,32 +106,39 @@ const command: Command = {
           ];
 
           const ask_answer = <Discord.Message>await interaction.followUp({
-            content: 'Are you sure about this?',
+            embeds: [
+              {
+                color: 'YELLOW',
+                description: `**Are you sure about this?**`,
+              },
+            ],
             components: [
               new Discord.MessageActionRow().addComponents(...buttons),
             ],
             fetchReply: true,
           });
 
-          let answer = await ask_answer.awaitMessageComponent({
-            filter: (button) => interaction.user.id === button.user.id,
-            time: 180000,
-          });
+          let answer: Discord.MessageComponentInteraction =
+            await ask_answer.awaitMessageComponent({
+              filter: (button) => interaction.user.id === button.user.id,
+              time: 180000,
+            });
 
           ask_answer.delete();
 
           switch (answer.customId) {
             case 'yes':
-              await this._overwrite_member_data(member.id, amount);
+              await this._overwrite_member_data(member, note, cooldown);
               this.response(
-                'Success',
+                `Success`,
                 '#00ff00',
-                `You successfully added \`${amount}\` to \`${member.user.tag}\``
+                'Note was successfully added!'
               );
               break;
 
             case 'no':
-              return this.response('Error', '#ff0000', 'Rejected by author');
+              this.response('Error', '#ff0000', 'Rejected by author!');
+              break;
             default:
               break;
           }
@@ -163,22 +146,30 @@ const command: Command = {
 
         private async _overwrite_member_data(
           member_id: string,
-          amount: number
+          note: {},
+          cooldown: number
         ): Promise<void> {
-          if (!member_id) throw new Error('Member_id was not given!');
+          if (!member_id || !note || !cooldown)
+            throw new Error('One of arguments was not provided');
 
-          let _users_db: DB.Document = this.db.collection('users');
+          let _users_db: DB.Document = this.db.collection('notes');
 
-          let _current_user = <UserType>(
-            ((await _users_db.findOne({ login: member_id })) || {})
-          );
+          let _current_user =
+            (await _users_db.findOne({
+              login: member_id,
+            })) || {};
 
-          let _new_user_ballance = Number(_current_user.coins || 0) + amount;
+          let user_notes = _current_user.notes || [];
+
+          console.log(note);
+
+          user_notes.push(note);
 
           if (!_current_user.login) {
             _users_db.insertOne({
               login: member_id,
-              coins: _new_user_ballance,
+              notes: user_notes,
+              cooldown,
             });
           } else {
             _users_db.updateOne(
@@ -187,15 +178,28 @@ const command: Command = {
               },
               {
                 $set: {
-                  coins: _new_user_ballance,
+                  notes: user_notes,
+                  cooldown,
                 },
               }
             );
           }
         }
-      }
 
-      new AddMoney(interaction);
+        private async _get_member_data(member_id: string): Promise<any> {
+          if (!member_id) throw new Error('Member Id was not provided!');
+
+          let _users_db: DB.Document = this.db.collection('notes');
+
+          let _current_user =
+            (await _users_db.findOne({
+              login: member_id,
+            })) || {};
+
+          return _current_user;
+        }
+      }
+      new Note(interaction);
     } catch (e) {
       bot.users.cache
         .get(f.config.owner)
