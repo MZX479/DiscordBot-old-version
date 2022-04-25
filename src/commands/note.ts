@@ -46,6 +46,15 @@ const command: Command = {
 
           let note = <string>args.filter((arg) => arg.name === 'note')[0].value;
 
+          if (note.length > 200)
+            return this.response(
+              'Error',
+              '#ff0000',
+              'Your note can not be more than 200 symbols',
+              'https://cdn.discordapp.com/emojis/923899365385449472.webp?size=64&quality=lossless',
+              true
+            );
+
           let random_id = Math.floor(Math.random() * 5540);
 
           interface Note {
@@ -66,7 +75,9 @@ const command: Command = {
             return this.response(
               'Error',
               '#ff0000',
-              'Your cooldown has not expired!'
+              'Your cooldown has not expired!',
+              'https://cdn.discordapp.com/emojis/923899365385449472.webp?size=64&quality=lossless',
+              true
             );
 
           this.check_buttons(this.interaction.user.id, new_note, new_cooldown);
@@ -75,7 +86,9 @@ const command: Command = {
         async response(
           title: string,
           color: Discord.ColorResolvable,
-          description: string
+          description: string,
+          thumbnail: string,
+          epheremal?: boolean
         ): Promise<void> {
           interaction.followUp({
             embeds: [
@@ -85,11 +98,15 @@ const command: Command = {
                   name: this.interaction.user.tag,
                   iconURL: this.interaction.user.avatarURL({ dynamic: true })!,
                 },
+                thumbnail: {
+                  url: thumbnail,
+                },
                 color,
                 description,
                 timestamp: this.TimeNow,
               },
             ],
+            ephemeral: epheremal,
           });
         }
 
@@ -138,12 +155,18 @@ const command: Command = {
               this.response(
                 `Success`,
                 '#00ff00',
-                'Note was successfully added!'
+                'Note was successfully added!',
+                'https://cdn.discordapp.com/emojis/966737934457905202.webp?size=128&quality=lossless'
               );
               break;
 
             case 'no':
-              this.response('Error', '#ff0000', 'Rejected by author!');
+              this.response(
+                'Error',
+                '#ff0000',
+                'Rejected by author!',
+                'https://cdn.discordapp.com/emojis/923899365385449472.webp?size=64&quality=lossless'
+              );
               break;
             default:
               break;

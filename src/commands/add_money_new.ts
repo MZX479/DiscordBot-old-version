@@ -34,7 +34,7 @@ const command: Command = {
       class AddMoney {
         private interaction: Discord.CommandInteraction;
         private db: DB.Db;
-        private member_id: Discord.GuildMember;
+        private member_id: string;
         constructor(interaction: Discord.CommandInteraction) {
           this.interaction = interaction;
           this.db = db;
@@ -47,18 +47,6 @@ const command: Command = {
           let member = <Discord.GuildMember>(
             args.filter((arg) => arg.name === 'ping')[0]?.member
           );
-
-          let roles_check = <Discord.GuildMemberRoleManager>(
-            this.interaction.member?.roles
-          );
-
-          if (!roles_check.cache.has('904339446168694806'))
-            return this.response(
-              'Error',
-              '#ff0000',
-              'You do not have a permission for that!'
-            );
-
           let member_id = <string>(
             args.filter((arg) => arg.name === 'id')[0]?.value
           );
@@ -68,7 +56,21 @@ const command: Command = {
             member_id = member.id;
           }
 
-          member = this.member_id;
+          console.log(args);
+          let roles_check = <Discord.GuildMemberRoleManager>(
+            this.interaction.member?.roles
+          );
+
+          if (!roles_check.cache.has('904339446168694806'))
+            return this.response(
+              'Error',
+              '#ff0000',
+              'You do not have a permission for that!',
+              'https://cdn.discordapp.com/emojis/923899365385449472.webp?size=64&quality=lossless',
+              true
+            );
+
+          this.member_id = member_id;
 
           let amount = Number(
             args.filter((arg) => arg.name === 'amount')[0].value
@@ -78,13 +80,10 @@ const command: Command = {
             return this.response(
               'Error',
               '#ff0000',
-              'Uncorrect amount (limit 300000)'
+              'Uncorrect amount (limit 300000)',
+              'https://cdn.discordapp.com/emojis/923899365385449472.webp?size=64&quality=lossless',
+              true
             );
-
-          if (!member && member_id) {
-            member = await interaction.guild!.members.fetch(member_id);
-            member_id = member.id;
-          }
 
           this.check_buttons(member, amount);
         }
@@ -92,9 +91,11 @@ const command: Command = {
         async response(
           title: string,
           color: Discord.ColorResolvable,
-          description: string
+          description: string,
+          thumbnail: string,
+          ephemeral?: boolean
         ): Promise<void> {
-          if (!title || !color || !description)
+          if (!title || !color || !description || !thumbnail)
             throw new Error('One of components was not provided!');
 
           interaction.followUp({
@@ -105,10 +106,14 @@ const command: Command = {
                   name: this.interaction.user.tag,
                   iconURL: this.interaction.user.avatarURL({ dynamic: true })!,
                 },
+                thumbnail: {
+                  url: thumbnail,
+                },
                 color,
                 description,
               },
             ],
+            ephemeral: ephemeral,
           });
         }
 
@@ -150,12 +155,18 @@ const command: Command = {
               this.response(
                 'Success',
                 '#00ff00',
-                `You successfully added \`${amount}\` to \`${member.user.tag}\``
+                `You successfully added \`${amount}\` to \`${member.user.tag}\``,
+                'https://cdn.discordapp.com/emojis/966737934457905202.webp?size=128&quality=lossless'
               );
               break;
 
             case 'no':
-              return this.response('Error', '#ff0000', 'Rejected by author');
+              return this.response(
+                'Error',
+                '#ff0000',
+                'Rejected by author',
+                'https://cdn.discordapp.com/emojis/923899365385449472.webp?size=64&quality=lossless'
+              );
             default:
               break;
           }

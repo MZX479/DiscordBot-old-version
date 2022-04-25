@@ -48,7 +48,7 @@ const command: Command = {
               'https://challengepost-s3-challengepost.netdna-ssl.com/photos/production/solution_photos/000/134/598/datas/original.png',
           };
 
-          let tails = {
+          let tails: {} | any = {
             name: 'tails',
             picture:
               'https://challengepost-s3-challengepost.netdna-ssl.com/photos/production/solution_photos/000/134/599/datas/original.png',
@@ -63,7 +63,8 @@ const command: Command = {
               'Error',
               '#ff0000',
               'You chose the wrong side!',
-              'https://cdn.discordapp.com/emojis/923899365385449472.webp?size=64&quality=lossless'
+              'https://cdn.discordapp.com/emojis/923899365385449472.webp?size=64&quality=lossless',
+              true
             );
 
           let user_bet: number = <number>(
@@ -74,7 +75,8 @@ const command: Command = {
               'Error',
               '#ff0000',
               'Please provide a correct number!',
-              'https://cdn.discordapp.com/emojis/923899365385449472.webp?size=64&quality=lossless'
+              'https://cdn.discordapp.com/emojis/923899365385449472.webp?size=64&quality=lossless',
+              true
             );
 
           let _user_ballance = _get_member_data.coins;
@@ -84,13 +86,14 @@ const command: Command = {
               'Error',
               '#ff0000',
               'You do not have enough money!',
-              'https://cdn.discordapp.com/emojis/923899365385449472.webp?size=64&quality=lossless'
+              'https://cdn.discordapp.com/emojis/923899365385449472.webp?size=64&quality=lossless',
+              true
             );
 
-          let win_bet = _user_ballance - user_bet + user_bet * 2;
-          let lose_bet = _user_ballance - user_bet;
-          let winner;
-          let lose;
+          let win_bet = <number>_user_ballance - user_bet + user_bet * 2;
+          let lose_bet = <number>_user_ballance - user_bet;
+          let winner: {} | any;
+          let lose: {} | any;
 
           switch (result_game) {
             case 0:
@@ -138,7 +141,8 @@ const command: Command = {
           title: string,
           color: Discord.ColorResolvable,
           description: string,
-          thumbnail: string
+          thumbnail: string,
+          epheremal?: boolean
         ): Promise<void> {
           if (!title || !color || !description || !thumbnail)
             throw new Error('One of components was not given!');
@@ -159,6 +163,7 @@ const command: Command = {
                 timestamp: new Date(),
               },
             ],
+            ephemeral: epheremal,
           });
         }
 
@@ -171,10 +176,6 @@ const command: Command = {
 
           let _users_db: DB.Collection<DB.Document> =
             this.db.collection('users');
-
-          let _current_user = <UserType>await _users_db.findOne({
-            login: member_id,
-          });
 
           _users_db.updateOne(
             {
