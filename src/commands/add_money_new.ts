@@ -56,7 +56,6 @@ const command: Command = {
             member_id = member.id;
           }
 
-          console.log(args);
           let roles_check = <Discord.GuildMemberRoleManager>(
             this.interaction.member?.roles
           );

@@ -4,8 +4,8 @@ import { type Command } from '../types';
 
 const command: Command = {
   slash: {
-      name: ,
-      description: ,
+      name: '',
+      description: '',
 },
 
 async execute(bot, f, mongo, args, interaction) {
