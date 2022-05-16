@@ -62,7 +62,7 @@ const command: Command = {
             return this.response(
               'Error',
               '#ff0000',
-              'You chose the wrong side!',
+              'You have chosen the wrong side!',
               'https://cdn.discordapp.com/emojis/923899365385449472.webp?size=64&quality=lossless',
               true
             );

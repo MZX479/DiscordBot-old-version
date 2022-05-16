@@ -100,7 +100,9 @@ const command: Command = {
 
       if (!embeds[1]) return;
 
-      const collector = await menu_message.createMessageComponentCollector();
+      const collector = await menu_message.createMessageComponentCollector({
+        time: 180000,
+      });
 
       current_page = 0;
 
