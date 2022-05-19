@@ -2,6 +2,7 @@ import {
   Client,
   CommandInteraction,
   CommandInteractionOption,
+  DiscordAPIError,
 } from 'discord.js';
 import { MongoClient } from 'mongodb';
 
@@ -9,6 +10,12 @@ export type configType = {
   prefix: string;
   owner: string;
 };
+
+export type Command_type = (
+  bot: Client,
+  f: modulesType,
+  mongo: MongoClient
+) => Promise<any>;
 
 export type modulesType = {
   config: configType;
@@ -19,7 +26,8 @@ export type argsType = Readonly<CommandInteractionOption[]>;
 
 export type UserType = {
   login: string;
-  coins: number;
+  coins?: number;
+  daily_cooldown?: number;
 };
 
 export type slashType = {

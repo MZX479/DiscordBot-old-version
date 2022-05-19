@@ -1,6 +1,7 @@
 import * as Discord from 'discord.js';
 import { APIMessage } from 'discord-api-types/v10';
-import { Db } from 'mongodb';
+import { MongoClient } from 'mongodb';
+import * as DB from 'mongodb';
 
 export function check_value(param: number): boolean {
   return param % 2 === 0;
@@ -53,33 +54,32 @@ export class Response {
     return this.send_embed(reply_true);
   }
 
-  false_embed(description: string, options: {} = {}): Promise<Discord.Message> {
+  reply_false(
+    description: string,
+    options: {} = {},
+    epheremal: boolean
+  ): Promise<Discord.Message> {
     if (!description)
       throw new Error('description was not provided (false_response)');
 
     let reply_false: Discord.MessageEmbed = this.get_embed({
-      color: 'GREEN',
+      color: 'RED',
       description: description,
       ...options,
     });
 
-    return <Promise<Discord.Message>>this.send_embed(reply_false);
+    return <Promise<Discord.Message>>this.send_embed(reply_false, epheremal);
   }
 
-  send_embed(completted_embed: Discord.MessageEmbed): Promise<Discord.Message> {
+  send_embed(
+    completted_embed: Discord.MessageEmbed,
+    epheremal?: boolean
+  ): Promise<Discord.Message> {
     if (!completted_embed) throw new Error('Embed was not given!');
 
     return <Promise<Discord.Message>>this.interaction.followUp({
       embeds: [completted_embed],
+      ephemeral: epheremal,
     });
-  }
-}
-
-export class Get_member_data {
-  interaction: Discord.CommandInteraction;
-  db: Db;
-  constructor(interaction: Discord.CommandInteraction, db: Db) {
-    this.interaction = interaction;
-    this.db = db;
   }
 }

@@ -2,83 +2,84 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 exports.command = void 0;
-var swcHelpers = require("@swc/helpers");
-var Discord = swcHelpers.interopRequireWildcard(require("discord.js"));
+var _exports = require("../exports");
+const daily_amount = 1000;
 const command = {
     slash: {
         name: 'daily',
-        description: 'Собрать дейлик'
+        description: `gives a member a ${daily_amount} of money's`
     },
-    async execute (bot, f, mongo, args1, message1) {
-        const db = mongo.db(message1.guild.id);
+    async execute (bot, f, mongo, args, interaction) {
+        const db = mongo.db(interaction.guild.id);
         try {
-            class Daily {
+            class Daily extends _exports.Response {
                 async main() {
-                    let _get_member_data = await this._get_member_data(this.message.member.id);
-                    let current_time = new Date().getTime();
-                    let daily_cooldown = current_time + this.cooldown;
-                    if (_get_member_data.daily_cooldown > current_time) {
-                        return this.response('Error', '#ff0000', 'Your cooldown has not elapsed');
+                    var ref, ref1, ref2;
+                    let member_data = await this._get_member_data(interaction.user.id, 'users');
+                    const new_cooldown = this.time.getTime() + this.cooldown;
+                    let cooldown_to_write = (((ref = member_data[1]) === null || ref === void 0 ? void 0 : ref.daily_cooldown) || 0) + new_cooldown;
+                    let new_member_ballance = (((ref1 = member_data[1]) === null || ref1 === void 0 ? void 0 : ref1.coins) || 0) + daily_amount;
+                    if (((ref2 = member_data[1]) === null || ref2 === void 0 ? void 0 : ref2.daily_cooldown) > this.time.getTime()) {
+                        return this.reply_false('Your cooldown was not expired!', {
+                            thumbnail: {
+                                url: 'https://cdn.discordapp.com/emojis/923899365385449472.webp?size=64&quality=lossless'
+                            }
+                        }, true);
                     } else {
-                        await this._overwrite_member_data(this.message.member.user.id, this.daily_amount, daily_cooldown);
-                        this.response('Success', '#00fff00', `Success. Your ballance now is \`${_get_member_data.coins + this.daily_amount}\` \n Comeback tommorow!`);
-                    }
-                }
-                async response(title, color, text) {
-                    if (!title || !color || !text) throw new Error('One of arguments were not given!');
-                    let response = new Discord.MessageEmbed().setColor(color).setTitle(title).setAuthor(this.message.user.tag, this.message.user.avatarURL({
-                        dynamic: true
-                    })).setDescription(`**${text}**`).setTimestamp();
-                    this.message.channel.send({
-                        embeds: [
-                            response
-                        ]
-                    });
-                }
-                async _overwrite_member_data(member_id, daily_amount, cooldown) {
-                    if (!member_id || !daily_amount || !cooldown) throw new Error('One of arguments were not given!');
-                    let users_db = this.db.collection('users');
-                    let current_user = await users_db.findOne({
-                        login: member_id
-                    }) || {};
-                    let new_ballance = (current_user.coins || 0) + daily_amount;
-                    if (!current_user) {
-                        users_db.insertOne({
-                            login: member_id,
-                            coins: new_ballance,
-                            daily_cooldown: cooldown
-                        });
-                    } else {
-                        users_db.updateOne({
-                            login: member_id
-                        }, {
-                            $set: {
-                                coins: new_ballance,
-                                daily_cooldown: cooldown
+                        await this._overwrite_member_data(interaction.user.id, new_member_ballance, cooldown_to_write);
+                        this.reply_true(`Success! You received \`${daily_amount}💸\`\n Come Tommorow`, {
+                            thumbnail: {
+                                url: 'https://cdn.discordapp.com/emojis/966737934457905202.webp?size=64&quality=lossless'
                             }
                         });
                     }
                 }
-                async _get_member_data(member_id) {
-                    if (!member_id) throw new Error('Member id was not provided');
-                    let users_db = this.db.collection('users');
-                    let current_user = await users_db.findOne({
+                async _get_member_data(member_id, collection) {
+                    if (!member_id || !collection) throw new Error('member id or collection were not provided!');
+                    const users_db = db.collection(collection);
+                    const _get_member_data = await users_db.findOne({
                         login: member_id
-                    }) || {};
-                    return current_user;
+                    });
+                    const data_array = [
+                        users_db,
+                        _get_member_data, 
+                    ];
+                    return data_array;
                 }
-                constructor(message, args){
-                    this.message = message;
-                    this.args = args;
-                    this.db = db;
-                    this.cooldown = 86000000;
-                    this.daily_amount = 1000;
+                async _overwrite_member_data(member_id, new_ballance, daily_cooldown) {
+                    var ref;
+                    if (!new_ballance || !daily_cooldown || !member_id) throw new Error('new_ballance, member_id or cooldown were not provided!');
+                    let member_data = await this._get_member_data(interaction.user.id, 'users');
+                    if (!((ref = member_data[1]) === null || ref === void 0 ? void 0 : ref.login)) {
+                        var ref4;
+                        (ref4 = member_data[0]) === null || ref4 === void 0 ? void 0 : ref4.insertOne({
+                            login: member_id,
+                            coins: new_ballance,
+                            daily_cooldown
+                        });
+                    } else {
+                        var ref5;
+                        (ref5 = member_data[0]) === null || ref5 === void 0 ? void 0 : ref5.updateOne({
+                            login: member_id
+                        }, {
+                            $set: {
+                                coins: new_ballance,
+                                daily_cooldown
+                            }
+                        });
+                    }
+                }
+                constructor(){
+                    super(interaction);
+                    this.time = new Date();
+                    this.cooldown = 860000000;
                     this.main();
                 }
             }
             new Daily();
         } catch (e) {
-            bot.users.cache.get(f.config.owner).send(`**ERROR** \`${e.name}\`\n\`${e.message}\``);
+            var ref3;
+            (ref3 = bot.users.cache.get(f.config.owner)) === null || ref3 === void 0 ? void 0 : ref3.send(`**ERROR** \`${e.name}\`\n\`${e.message}\``);
             console.error(e);
         }
     }

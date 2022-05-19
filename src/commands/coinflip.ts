@@ -79,9 +79,9 @@ const command: Command = {
               true
             );
 
-          let _user_ballance = _get_member_data.coins;
+          let _user_ballance = _get_member_data.coins!;
 
-          if (!_get_member_data || user_bet > _get_member_data.coins)
+          if (!_get_member_data || user_bet > _user_ballance)
             return this.response(
               'Error',
               '#ff0000',

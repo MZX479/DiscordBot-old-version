@@ -32,7 +32,7 @@ MongoClient.connect('mongodb://localhost:27017', (err, mongo) => {
       f.commands.push(Command);
     }
 
-    let rest = new REST({
+    let rest: REST = new REST({
       version: '9',
     }).setToken(token);
 
