@@ -1,7 +1,4 @@
 import * as Discord from 'discord.js';
-import { APIMessage } from 'discord-api-types/v10';
-import { MongoClient } from 'mongodb';
-import * as DB from 'mongodb';
 
 export function check_value(param: number): boolean {
   return param % 2 === 0;
@@ -13,6 +10,30 @@ export function random_id_letters(): string {
 
 export function random_id_long_numbers(): number {
   return Math.floor(Math.random() * 1234567890);
+}
+
+export class hello_world {
+  interaction: Discord.CommandInteraction;
+  time: Date;
+  constructor(interaction: Discord.CommandInteraction) {
+    this.time = new Date();
+    this.hello_world();
+  }
+
+  hello_world(): void {
+    this.interaction.followUp({
+      embeds: [
+        {
+          author: {
+            name: this.interaction.user.id,
+            iconURL: this.interaction.user.avatarURL({ dynamic: true })!,
+          },
+          description: 'hello world!',
+          timestamp: this.time,
+        },
+      ],
+    });
+  }
 }
 
 export class Response {
