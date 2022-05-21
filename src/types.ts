@@ -2,9 +2,8 @@ import {
   Client,
   CommandInteraction,
   CommandInteractionOption,
-  DiscordAPIError,
 } from 'discord.js';
-import { MongoClient } from 'mongodb';
+import { MongoClient, ObjectId } from 'mongodb';
 
 export type configType = {
   prefix: string;
@@ -25,9 +24,13 @@ export type modulesType = {
 export type argsType = Readonly<CommandInteractionOption[]>;
 
 export type UserType = {
+  _id: ObjectId;
   login: string;
   coins?: number;
   daily_cooldown?: number;
+  reputation?: number;
+  isMuted?: {};
+  mutes?: Array<{}>;
 };
 
 export type slashType = {

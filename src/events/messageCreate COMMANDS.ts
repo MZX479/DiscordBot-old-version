@@ -1,5 +1,3 @@
-import { Command_type } from '../types';
-
 export default async function (bot, f, mongo, message) {
   if (message.author.bot || message.channel.type != 'GUILD_TEXT') return;
   if (!message.content.startsWith(f.config.prefix)) return;
