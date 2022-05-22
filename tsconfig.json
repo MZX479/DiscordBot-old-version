@@ -3,6 +3,6 @@
         "outDir": "C:/Issei/dist",
         "rootDir": "C:/Issei/src",
         "strictNullChecks": true,
-
+        "strict": true
     }
 }

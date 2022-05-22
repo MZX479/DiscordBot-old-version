@@ -78,7 +78,7 @@ export class Response {
   reply_false(
     description: string,
     options: {} = {},
-    epheremal: boolean
+    epheremal?: boolean
   ): Promise<Discord.Message> {
     if (!description)
       throw new Error('description was not provided (false_response)');
@@ -103,4 +103,10 @@ export class Response {
       ephemeral: epheremal,
     });
   }
+}
+
+export interface ClubInterface {
+  club_name: string;
+  owner: string;
+  users?: [];
 }
