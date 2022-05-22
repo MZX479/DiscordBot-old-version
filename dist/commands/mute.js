@@ -147,8 +147,9 @@ const command = {
                 }
             }
             new Mute();
-        } catch (e) {
+        } catch (err) {
             var ref6;
+            let e = err;
             (ref6 = bot.users.cache.get(f.config.owner)) === null || ref6 === void 0 ? void 0 : ref6.send(`**ERROR** \`${e.name}\`\n\`${e.message}\``);
             console.error(e);
         }

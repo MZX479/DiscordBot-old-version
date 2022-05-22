@@ -77,8 +77,9 @@ const command = {
                 }
             }
             new Daily();
-        } catch (e) {
+        } catch (err) {
             var ref3;
+            let e = err;
             (ref3 = bot.users.cache.get(f.config.owner)) === null || ref3 === void 0 ? void 0 : ref3.send(`**ERROR** \`${e.name}\`\n\`${e.message}\``);
             console.error(e);
         }

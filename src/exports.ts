@@ -13,7 +13,7 @@ export function random_id_long_numbers(): number {
 }
 
 export class hello_world {
-  interaction: Discord.CommandInteraction;
+  interaction!: Discord.CommandInteraction;
   time: Date;
   constructor(interaction: Discord.CommandInteraction) {
     this.time = new Date();

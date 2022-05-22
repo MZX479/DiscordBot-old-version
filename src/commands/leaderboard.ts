@@ -155,7 +155,8 @@ const command: Command = {
       collector.on('end', () => {
         menu_message.edit({ components: [] });
       });
-    } catch (e) {
+    } catch (err) {
+      let e = <{ message: string; name: string }>err;
       bot.users.cache
         .get(f.config.owner)
         ?.send(`**ERROR** \`${e.name}\`\n\`${e.message}\``);

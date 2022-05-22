@@ -204,7 +204,8 @@ const command: Command = {
       }
 
       new Coinflip(interaction);
-    } catch (e) {
+    } catch (err) {
+      let e = <{ message: string; name: string }>err;
       bot.users.cache
         .get(f.config.owner)
         ?.send(`**ERROR** \`${e.name}\`\n\`${e.message}\``);

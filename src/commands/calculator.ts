@@ -45,8 +45,8 @@ const command: Command = {
         ];
         result_field = 'Choose something';
         result_embed = this.get_result_embed();
-        collector: Discord.InteractionCollector<Discord.MessageComponentInteraction>;
-        calc_message: Discord.Message;
+        collector!: Discord.InteractionCollector<Discord.MessageComponentInteraction>;
+        calc_message!: Discord.Message;
         isResult = true;
 
         main() {
@@ -154,7 +154,8 @@ const command: Command = {
         }
       }
       new Calculator().main();
-    } catch (e) {
+    } catch (err) {
+      let e = <{ message: string; name: string }>err;
       bot.users.cache
         .get(f.config.owner)
         ?.send(`**ERROR** \`${e.name}\`\n\`${e.message}\``);

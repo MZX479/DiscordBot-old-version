@@ -34,7 +34,7 @@ const command: Command = {
       class AddMoney {
         private interaction: Discord.CommandInteraction;
         private db: DB.Db;
-        private member_id: string;
+        private member_id!: string;
         constructor(interaction: Discord.CommandInteraction) {
           this.interaction = interaction;
           this.db = db;
@@ -206,7 +206,8 @@ const command: Command = {
       }
 
       new AddMoney(interaction);
-    } catch (e) {
+    } catch (err) {
+      let e = <{ message: String; name: string }>err;
       bot.users.cache
         .get(f.config.owner)
         ?.send(`**ERROR** \`${e.name}\`\n\`${e.message}\``);

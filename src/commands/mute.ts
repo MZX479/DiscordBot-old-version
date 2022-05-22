@@ -51,8 +51,8 @@ const command: Command = {
     const db: DB.Db = mongo.db(interaction.guild!.id);
     try {
       class Mute {
-        private member: Discord.GuildMember;
-        private member_id: string;
+        private member!: Discord.GuildMember;
+        private member_id!: string;
         private mute_role_id = '870604224386433044';
 
         constructor() {
@@ -197,7 +197,8 @@ const command: Command = {
       }
 
       new Mute();
-    } catch (e) {
+    } catch (err) {
+      let e = <{ message: string; name: string }>err;
       bot.users.cache
         .get(f.config.owner)
         ?.send(`**ERROR** \`${e.name}\`\n\`${e.message}\``);
