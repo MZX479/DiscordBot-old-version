@@ -10,9 +10,8 @@ const command: Command = {
   async execute(bot, f, mongo, args, interaction) {
     const db: DB.Db = mongo.db(interaction.guild!.id);
     try {
-
-  } catch (err) {
-    let e = <{ message: string; name: string }>err;
+    } catch (err) {
+      let e = <{ message: string; name: string }>err;
       bot.users.cache
         .get(f.config.owner)
         ?.send(`**ERROR** \`${e.name}\`\n\`${e.message}\``);
