@@ -10,23 +10,16 @@ type fieldType = {
 
 const command: Command = {
   slash: {
-    name: 'leaderboard',
-    description: 'leaderboard',
+    name: 'pg_test',
+    description: 'test pages',
   },
-
   async execute(bot, f, mongo, args, interaction) {
     const db: DB.Db = mongo.db(interaction.guild!.id);
     try {
       const users_db = db.collection('users');
       const users_data = <UserType[]>await users_db
-        .find({
-          coins: {
-            $gt: 0,
-          },
-        })
-        .sort({
-          coins: -1,
-        })
+        .find({ reputation: { $gt: 0 } })
+        .sort({ reputation: -1 })
         .toArray();
 
       const pages: fieldType[][] = [];
@@ -36,6 +29,7 @@ const command: Command = {
       let number = 1;
       let pos = 1;
       let leader: undefined | Discord.GuildMember;
+
       const members = await interaction.guild!.members.fetch({
         user: users_data.map((user) => user.login),
       });
@@ -46,9 +40,9 @@ const command: Command = {
 
         if (pos === 1) leader = member;
 
-        const field: fieldType = {
+        const field = <fieldType>{
           name: `${pos++}. ${member.user.tag}`,
-          value: `${user.coins} :money_with_wings:`,
+          value: `${user.reputation}`,
         };
 
         if (pages[current_page]) pages[current_page].push(field);
@@ -57,18 +51,17 @@ const command: Command = {
         number++;
 
         if (number === 3) {
-          number = 1;
-          current_page++;
+          (number = 1), current_page++;
         }
       }
 
       let page_counter = 1;
 
       for (let page of pages) {
-        const embed = new Discord.MessageEmbed()
-          .setTitle('Leaderboard')
+        const embed: Discord.MessageEmbed = new Discord.MessageEmbed()
+          .setTitle('Reputation leaderboard')
           .addFields(...page)
-          .setColor('YELLOW')
+          .setColor('GREEN')
           .setFooter(`Page ${page_counter++} of ${pages.length}`);
 
         if (leader)
@@ -78,7 +71,7 @@ const command: Command = {
       }
 
       const prev_button = new Discord.MessageButton()
-        .setLabel('Previos')
+        .setLabel('Previous')
         .setStyle('SECONDARY')
         .setCustomId('prev')
         .setDisabled(true);
@@ -129,11 +122,13 @@ const command: Command = {
 
             if (current_page <= 0) {
               prev_button.disabled = true;
+
+              if (current_page < embeds.length - 1) {
+                next_button.disabled = false;
+              }
+
+              update_message(button);
             }
-            if (current_page < embeds.length - 1) {
-              next_button.disabled = false;
-            }
-            update_message(button);
             break;
           case 'next':
             if (current_page + 1 > embeds.length - 1) return;
