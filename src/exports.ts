@@ -4,6 +4,12 @@ export function check_value(param: number): boolean {
   return param % 2 === 0;
 }
 
+export async function custom_random_number(
+  multiplayer: number
+): Promise<number> {
+  return Math.floor(Math.random() * 7);
+}
+
 export function random_id_letters(): string {
   return '_' + Math.random().toString(36).slice(2);
 }
@@ -108,5 +114,6 @@ export class Response {
 export interface ClubInterface {
   club_name: string;
   owner: string;
+  description?: string;
   users?: [];
 }
