@@ -37,7 +37,7 @@ const command: Command = {
           this.start();
         }
 
-        async start() {
+        async start(): Promise<Discord.Message | undefined> {
           const clubs_collection = db.collection('clubs');
 
           const is_club_exist = await clubs_collection.findOne({
@@ -126,19 +126,20 @@ const command: Command = {
         }
 
         async club_info(): Promise<[string, number, ClubInterface]> {
-          const club_name = <string>(
+          const name = <string>(
             args.filter((arg) => arg.name === 'name')[0].value
           );
 
           const cost: number = 1000;
 
           let new_club: ClubInterface = {
-            club_name: club_name,
+            name: name,
+            description: '',
             owner: interaction.user.tag,
           };
 
           let returned_info: [string, number, ClubInterface] = [
-            club_name,
+            name,
             cost,
             new_club,
           ];

@@ -39,7 +39,7 @@ export type slashType = {
   options?: Array<{
     name: string;
     description: string;
-    required: boolean;
+    required?: boolean;
     type: number;
   }>;
 };

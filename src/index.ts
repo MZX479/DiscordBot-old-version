@@ -1,4 +1,4 @@
-import { Intents, Client, Collection } from 'discord.js';
+import { Intents, Client } from 'discord.js';
 import { MongoClient } from 'mongodb';
 import * as fs from 'fs';
 import f from './config/modules';

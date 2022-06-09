@@ -112,7 +112,7 @@ export class Response {
 }
 
 export interface ClubInterface {
-  club_name: string;
+  name: string;
   owner: string;
   description?: string;
   users?: [];
