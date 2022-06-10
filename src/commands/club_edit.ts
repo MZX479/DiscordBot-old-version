@@ -61,9 +61,6 @@ const command: Command = {
           const user_value = <string>required_info.value; // value приводим к типу user_choices т.к. он может быть "description" || "name"
           const current_cost = this.prices[user_choice]; // по ключу, который указал юзер вытаскиваем стоимость
 
-          console.log(current_cost);
-          console.log(user_choice);
-
           if (current_cost > _get_member_data[1]!.coins)
             return this.reply_false('You do not have enough money!', {
               timestamp: this.time,

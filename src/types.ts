@@ -2,6 +2,7 @@ import {
   Client,
   CommandInteraction,
   CommandInteractionOption,
+  Message,
 } from 'discord.js';
 import { MongoClient, ObjectId } from 'mongodb';
 
@@ -52,6 +53,7 @@ export type Command = {
     f: modulesType,
     mongo: MongoClient,
     args: argsType,
-    interaction: CommandInteraction
+    interaction: CommandInteraction,
+    message?: Message
   ) => Promise<any | void>;
 };
