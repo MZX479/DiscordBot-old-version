@@ -43,8 +43,9 @@ const command: Command = {
             limit: amount,
           });
 
-          let deleted_messages =
-            interaction.channel!.bulkDelete(fetched_messages);
+          let deleted_messages = (
+            interaction.channel! as Discord.TextChannel
+          ).bulkDelete(fetched_messages);
 
           this.reply_true(`You successfully deleted \`${amount}\` messages!`);
         }

@@ -24,7 +24,9 @@ const command: Command = {
             limit: 30,
           });
 
-          await interaction.channel!.bulkDelete(fetched_messages);
+          await (interaction.channel! as Discord.TextChannel).bulkDelete(
+            fetched_messages
+          );
         }
       }
 
