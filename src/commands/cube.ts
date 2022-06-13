@@ -21,8 +21,13 @@ const command: Command = {
           this.start();
         }
 
-        async start(): Promise<void> {
+        async start() {
           const cube_roll = await custom_random_number(7);
+
+          if (cube_roll >= 7)
+            throw new Error('cube_roll got more than 6, pls fix');
+
+          if (cube_roll === 0) await custom_random_number(7);
 
           this.reply_true(`Your cube got ${cube_roll}`, {
             timestamp: this.time,

@@ -37,7 +37,7 @@ const command: Command = {
           this.start();
         }
 
-        async start(): Promise<Discord.Message | undefined> {
+        async start() {
           const clubs_collection = db.collection('clubs');
 
           const is_club_exist = await clubs_collection.findOne({
