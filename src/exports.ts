@@ -1,4 +1,5 @@
 import * as Discord from 'discord.js';
+import { Db } from 'mongodb';
 
 export function check_value(param: number): boolean {
   return param % 2 === 0;
@@ -26,7 +27,7 @@ export class hello_world {
     this.hello_world();
   }
 
-  hello_world(): void {
+  hello_world() {
     this.interaction.followUp({
       embeds: [
         {
