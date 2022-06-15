@@ -32,6 +32,7 @@ export type UserType = {
   reputation?: number;
   isMuted?: {};
   mutes?: Array<{}>;
+  rep_cooldown?: number;
 };
 
 export type slashType = {
