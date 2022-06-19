@@ -25,8 +25,7 @@ export type modulesType = {
 export type argsType = Readonly<CommandInteractionOption[]>;
 
 export type UserType = {
-  _id: ObjectId;
-  login: string;
+  login?: string;
   coins?: number;
   daily_cooldown?: number;
   reputation?: number;
